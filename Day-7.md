@@ -10,24 +10,99 @@ This video is a focused tutorial in a Terraform learning series, where the prese
 
 - **04:31 - 10:38 | Primitive Types: String, Number, Boolean**  
   - *String*: Introduced through a variable named `environment` that replaces hardcoded string prefixes.  
+    ```tf
+    variable "environment" {
+      type = string
+      description = "the env type"
+      default = "staging"
+    }
+  
   - *Number*: Demonstrated by controlling the OS disk size using a number variable—`storage_disk`.  
+    ```tf
+    variable "storage_disk" {
+      type = number
+      description = "the storage disk size of os"
+      default = 80
+    }
+    ```
   - *Boolean*: Used to define a flag (`is_delete`) that controls whether the OS disk deletes automatically when the VM is terminated, highlighting practical cost and data persistence implications.  
+    ```tf
+      variable "is_delete" {
+      type = bool
+      description = "the default behavior to os disk upon vm termination"
+      default = true
+      }
+      ```
   This segment stresses how different primitive types constrain inputs to match intended formats and behaviors.
 
 - **10:38 - 20:18 | List Type and Indexing**  
   Lists are defined as collections of a uniform data type (here, strings), allowing multiple possible values for a variable, such as allowed Azure regions. The tutorial details how to declare a `list(string)` type variable containing region options, demonstrates accessing list elements by zero-based indexing, and explains that Terraform does not support negative indexing as in other languages. The destructive nature of changing VM locations is noted when switching list indices.
-
+  ```tf
+    variable "allowed_locations" {
+      type = list(string)
+      description = "list of allowed locations"
+      default = [ "West Europe", "North Europe" , "East US" ]
+    }
+  ```
 - **20:18 - 26:58 | Map Type for Key-Value Pair Collections**  
   Maps represent key-value pairs with uniform value types, demonstrated here with a `map(string)` for resource tags such as environment, managed-by, and department. The presenter clarifies how to declare and assign maps, then access individual keys in the configuration using variable references with keys in double quotes. Differences between list indexing and map key access are highlighted.
-
+  ```tf
+  variable "resource_tags" {
+    type = map(string)
+    description = "tags to apply to the resources"
+    default = {
+      "environment" = "staging"
+      "managed_by" = "terraform"
+      "department" = "devops"
+    } 
+  }
+  ```
 - **26:58 - 33:40 | Tuple Type for Typed Heterogeneous Collections**  
   Tuples, similar to lists but allowing multiple distinct data types, are illustrated with a `tuple(string, string, number)`, representing network config parameters (vnet CIDR, subnet, subnet mask). The video explains how to extract tuple values using the `element()` function and build composite strings with concatenation—showing the correct syntax involving square brackets, double quotes, and dollar-sign interpolation in Terraform. This segment underscores how tuples enforce precise type ordering.
+  ```tf
+  # Tuple type
+  variable "network_config" {
+    type        = tuple([string, string, number])
+    description = "Network configuration (VNET address, subnet address, subnet mask)"
+    default     = ["10.0.0.0/16", "10.0.2.0", 24]
+  }
+  ```
+  
 
 - **33:40 - 39:49 | Set Type: Unique Collections with No Index**  
   Sets are collections of unique elements, similar to lists but disallow duplicates and lack ordering or index-based access. The presenter introduces sets with an example of allowed VM sizes but discovers accessing individual elements is different due to the absence of indexes. Although the use case is noted for validation (checking membership), direct indexed access is not possible, and the presenter switches to a list to demonstrate element access for simplicity. This points out practical limitations of sets in Terraform.
 
+  ```tf
+  variable "allowed_vm_sizes" {
+  type        = list(string)
+  description = "Allowed VM sizes"
+  default     = ["Standard_DS1_v2", "Standard_DS2_v2", "Standard_DS3_v2"]
+  }
+  ```
+
 - **39:49 - 41:45 | Object Type: Complex Typed Structures**  
   Objects, collections of named attributes with specified types, are shown through an example variable `vm_config` with keys like size, publisher, offer, and version, each typed (string). The demo explains how to define the object structure and access nested attributes via dotted variable references. This teaches viewers how to handle complex data shapes in Terraform configuration, combining multiple typed fields into one variable.
+
+  ```tf
+  # Object type
+  variable "vm_config" {
+    type = object({
+      size         = string
+      publisher    = string
+      offer        = string
+      sku          = string
+      version      = string
+    })
+    description = "Virtual machine configuration"
+    default = {
+      size         = "Standard_DS1_v2"
+      publisher    = "Canonical"
+      offer        = "0001-com-ubuntu-server-jammy"
+      sku          = "22_04-lts"
+      version      = "latest"
+    }
+  }
+  ```
 
 - **41:45 - 42:07 | Conclusion and Future Applications**  
   The presenter summarizes that the discussed type constraints (primitive and collection types) are foundational and will be applied across upcoming real-world Terraform projects for effective infrastructure management.
