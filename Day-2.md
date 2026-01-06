@@ -8,6 +8,8 @@ This video introduces and explains the critical concept of **Terraform providers
 - **00:00 - 02:45 : Introduction to Terraform Providers**  
   The speaker explains that Terraform providers are separate components from Terraform itself, with independent versioning. Providers are plugins that enable Terraform to communicate with different cloud platforms and service APIs such as AWS, Azure, GCP, and community-maintained services like Kubernetes or Docker. Providers create an interface between your Terraform configuration files and the target cloud APIs, translating Terraform commands into API calls and returning responses that confirm resource provisioning.
 
+  <img width="400" height="400" alt="image" src="https://github.com/user-attachments/assets/b0714931-f333-444f-be6a-873ca4abde64" />
+
 - **02:45 - 05:30 : Types of Terraform Providers and Their Maintenance**  
   Providers can be official (maintained by HashiCorp), partner-maintained (by cloud partners or third parties like Datadog), or community-maintained (open source contributors). The Azure RM provider example illustrates an official provider maintained by HashiCorp. The provider manages specific API interactions for its cloud platform, performing tasks like translating Terraform code into cloud-specific API calls and provisioning resources accordingly.
 
