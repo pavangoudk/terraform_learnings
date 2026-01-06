@@ -13,7 +13,7 @@ This video serves as an introductory tutorial for beginners on how to provision 
   - The Azure RM provider is the official Terraform provider maintained by HashiCorp for Azure resources.
   - Walking through documentation reveals the structure and key fields required for resource configurations.
   - Terraform provider versions should be selected thoughtfully, often locking the version to ensure consistency.
-
+  
 - **(02:54 - 07:36) Writing Terraform Configuration for Azure Resources**
   - Terraform files end with `.tf` extension; resources declared inside with a `resource` keyword.
   - Resource syntax includes resource type (e.g., `azurerm_resource_group`), an internal reference name (`example`), and configuration fields like `name` and `location`.
@@ -21,10 +21,48 @@ This video serves as an introductory tutorial for beginners on how to provision 
   - Implicit dependency ensures Terraform creates resources in the correct order without manual sequencing.
   - Explicit dependency (`depends_on`) exists but implicit dependency is recommended.
 
+  **main.tf**
+  ```tf
+  resource "azurerm_resource_group" "example" {
+    name     = "example-resources"
+    location = "West Europe"
+  }
+  
+  resource "azurerm_storage_account" "example" {
+    name                     = "techtutorial101"
+    resource_group_name      = azurerm_resource_group.example.name
+    location                 = azurerm_resource_group.example.location # implicit dependency
+    account_tier             = "Standard"
+    account_replication_type = "LRS"
+  
+    tags = {
+      environment = "staging"
+    }
+  }
+  ```
+
 - **(07:36 - 10:58) Defining the Terraform Block and Provider Configuration**
   - The `terraform` block defines required providers and Terraform version constraints.
   - Provider configuration includes specifying the source (`hashicorp/azurerm`) and version (`~> 4.8.0`).
   - Features block inside the provider configuration is mandatory, even if empty.
+
+   **main.tf**
+  ```tf
+  terraform {
+  required_providers {
+    azurerm = {
+        source = "hashicorp/azurerm"
+        version = "~> 4.8.0"
+    }
+  }
+  required_version = ">=1.9.0"
+  }
+
+  provider "azurerm" {
+      features {
+        
+      }
+  }
 
 - **(10:58 - 14:35) Authenticating with Azure and Setting Environment Variables**
   - Authentication begins with `az login` to authenticate interactively using Azure CLI.
