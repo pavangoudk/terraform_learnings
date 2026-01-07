@@ -13,6 +13,25 @@ This video introduces Terraform's **life cycle meta-arguments**, which offer fin
 
 - **00:59 - 02:40 | Preparing Demo Setup**  
   Explains why a copy of the folder is created to separate code snippets for better version control and demonstration.
+  ```tf
+  resource "azurerm_resource_group" "example" {
+    name     = "${var.environment}-resources"
+    location = var.location
+    tags = {
+      environment = var.environment
+    }
+    lifecycle {
+      create_before_destroy = true
+      prevent_destroy = false
+      ignore_changes = [ tags ]
+      precondition {
+        condition = contains(var.allowed_locations, var.location)
+        error_message = "Please enter a valid location!"
+      }
+      replace_triggered_by = [ azurerm_resource_group.example.id ]
+    }
+  }
+  ```
 
 - **02:41 - 06:00 | Implementing `create_before_destroy`**  
   Adds the life cycle block inside the resource configuration (`create_before_destroy = true`). Demonstrates applying the Terraform configuration, attempts to add tags but initially faces issues with changes not being detected due to a folder mix-up.
