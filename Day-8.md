@@ -19,6 +19,37 @@ This video is part of a Terraform tutorial series focused on meta-arguments, spe
   - Shows that hardcoding count as `2` leads to duplicate resource names—highlighting the need for unique names when multiple instances are created.
   - Introduced accessing elements using `count.index` to differentiate resource names dynamically.
   - Demonstrates improving count usage by linking count to the length of the list variable to avoid hardcoding.
+  ```tf
+    variable "allowed_locations" {
+    type = list(string)
+    description = "list of allowed locations"
+    default = [ "West Europe", "North Europe" , "East US" ]
+    }
+    
+    variable "storage_account_name" {
+    type = set(string)
+    default = [ "techtutorials11", "techtutorials12" ]
+    }
+    
+    ----
+    resource "azurerm_resource_group" "example" {
+    name     = "${var.environment}-resources"
+    location = var.allowed_locations[2]
+    }
+  
+    resource "azurerm_storage_account" "example" {
+      count = length(var.storage_account_name)
+      name = var.storage_account_name(count.index)
+      resource_group_name      = azurerm_resource_group.example.name
+      location                 = azurerm_resource_group.example.location
+      account_tier             = "Standard"
+      account_replication_type = "GRS"
+    
+      tags = {
+        environment = "staging"
+      }
+    }
+  ```
 
 - **10:19 - 13:45: Declaring List Variable for Names and Using Count with Indexing**
   - Changed the variable type to `list(string)` and supplied multiple distinct names.
@@ -35,6 +66,20 @@ This video is part of a Terraform tutorial series focused on meta-arguments, spe
   - When using a set, either `each.key` or `each.value` can fetch the single value because sets lack key-value pairs.
   - Presented the syntax to replace `count` with `for_each` for resource declarations to iterate over unique elements.
   - Encountered and resolved syntax issues by adjusting how properties inside the resource block reference the keys or values.
+  ```tf
+    resource "azurerm_storage_account" "example" {
+      for_each = var.storage_account_name
+      name                     = each.value
+      resource_group_name      = azurerm_resource_group.example.name
+      location                 = azurerm_resource_group.example.location
+      account_tier             = "Standard"
+      account_replication_type = "GRS"
+    
+      tags = {
+        environment = "staging"
+      }
+    }
+  ```
 
 - **18:58 - 20:26: Recap on When to Use Count Versus For Each**
   - **Count** is better suited for lists (allowing duplicates).
