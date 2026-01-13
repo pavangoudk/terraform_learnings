@@ -25,12 +25,19 @@ This video, part 11 of a 28-day Terraform series, dives deep into the built-in f
   - Demonstrated string concatenation using `${}` syntax in resource definitions.
   - Example output: `project-alpha-resource-rg` from input `Project Alpha Resource`.
 
+  ```tf
+     formatted_name =  lower(replace(var.project_name, " ", "-"))
+  ```
+
 - **15:31 - 19:55 Assignment 2: Merge Multiple Tag Maps**
   - Task: Merge two maps representing default tags and environment-specific tags.
   - Demonstrated declaring variables of type `map(string)` and using the `merge()` function to combine maps.
   - Created a local variable to hold merged tags for cleaner references in resources.
   - Resulted in a unified map containing all key-value pairs from both inputs to apply as tags in a resource.
 
+  ```tf
+     merge_tags = merge(var.default_tags,var.environment_tags)
+  ```
 - **20:00 - 31:45 Assignment 3: Validate and Format Storage Account Name**
   - Requirements: Storage account name must be lowercase, max 23 characters, only letters and numbers.
   - Used `substring()` to limit length to 23 characters.
@@ -39,6 +46,10 @@ This video, part 11 of a 28-day Terraform series, dives deep into the built-in f
   - Experimented live in Terraform console to test string cleanup functions.
   - Final approach combined `lower()`, multiple `replace()` calls to strip spaces and special characters.
 
+  ```tf
+   storage_formatted = replace(replace(lower(substr(var.storage_account_name,0,23))," ",""),"!","")
+  ```
+
 - **32:00 - 46:30 Assignment 4: Transform Port List to Security Group Rule Names**
   - Goal: Given a comma-separated list of ports, produce security group rule names prefixed by Port- and concatenate them.
   - Demonstrated converting a string to a list using `split()`, iterating over it with `for` loops.
@@ -46,6 +57,15 @@ This video, part 11 of a 28-day Terraform series, dives deep into the built-in f
   - Fixed syntax errors related to `split()` usage order and dynamic blocks.
   - Used string interpolation to construct names dynamically per port.
   - Output shows multiple security rules each named like Port-80 with corresponding port number and description.
+
+  ```tf
+     formatted_ports = split(",",(var.allowed_ports))
+      nsg_rules = [for port in local.formatted_ports : {
+        name = "port-${port}"
+        port = port
+        description = "Allowed traffic on port: ${port}"
+      }
+  ```
 
 - **46:31 - 47:35 Summary and Encouragement for Practice**
   - Instructor encourages practicing these assignments independently without copying solutions.
