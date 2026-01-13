@@ -8,23 +8,86 @@ This video is a continuation of a hands-on series integrating Azure DevOps and T
 - **00:00 - 04:52 | Understanding the `lookup` Function and Environment Configuration Mapping**  
   The video introduces the `lookup` function as a more efficient alternative to nested conditionals for mapping environment names (Dev, Staging, Prod) to specific machine types. It emphasizes implementing fallback/default values when lookup keys are absent and validates environment input strictly via variable validation. Example: Setting the default environment as Dev if no environment is specified and restricting accepted values with a clear error message for invalid inputs.
 
+```tf
+  vm_size = lookup(var.vm_sizes,var.environment,lower("dev"))
+```
+
 - **04:52 - 15:47 | Validations on VM Size Variable Using Functions `length` and `contains`**  
   Demonstrates validation rules applied to a VM size variable: enforcing string length between 2 to 20 characters and ensuring the string contains the keyword standard using the `contains` function. The video highlights a common error — `contains` function does not work on strings but only on lists or sets — and introduces `strcontains` as the correct function for string substring checks, ensuring validation accuracy.
+  ```tf
+  variable "vm_size" {
+    description = "Specifies the VM size."
+    type        = string
+  
+    validation {
+      condition     = length(var.vm_size) >= 2 && length(var.vm_size) <= 20
+      error_message = "The VM size must be between 2 and 20 characters long."
+    }
+  
+    validation {
+      condition     = strcontains(var.vm_size, "standard")
+      error_message = "The VM size must contain the keyword 'standard'."
+    }
+  }
+
+    
+  ```
 
 - **15:47 - 20:54 | Handling Sensitive Variables and Validation with `endswith` Function**  
   The tutorial explains how to mark variables as sensitive (e.g., credentials) to prevent their exposure in Terraform outputs. It shows how to validate strings to ensure they end with a specific suffix (`endswith` function), such as backup names ending with _backup. This reinforces good practices in managing secrets and adhering to naming conventions through validation.
+  ```tf
+  variable "db_password" {
+    description = "The database password (kept sensitive in state and output)."
+    type        = string
+    sensitive   = true
+  }
+  
+  variable "backup_name" {
+    description = "Name of the backup file, must end with _backup."
+    type        = string
+  
+    validation {
+      condition     = endswith(var.backup_name, "_backup")
+      error_message = "The backup name must end with '_backup'."
+    }
+  }
+
+  ```
 
 - **20:54 - 26:39 | File Path Validation and Managing Unique Resource Locations with `concat` & `toset` Functions**  
   Covers validating file and directory paths with `fileexists` function to confirm presence of required Terraform files. Then, it addresses combining location lists using `concat` and removing duplicates by converting lists to sets via `toset`, ensuring unique resource location data. This part illustrates manipulating variable collections to meet infrastructure configuration needs.
-
+```tf
+  #assignment 9
+  user_location = ["eastus", "westus","eastus"]
+  default_location = ["centralus"]
+  unique_location = toset(concat(local.user_location,local.default_location))
+```
 - **26:39 - 31:56 | Cost Calculations: Absolute Value Transformation and Finding Maximum**  
   Discusses working with numeric lists containing negative values by converting all to absolute via a loop and `abs` function, thereafter calculating the maximum cost using `max` function. It clarifies a subtlety with `max` requiring unpacking of list elements using the splat operator (`...`) to work correctly on collections.
+  ```tf
+   monthly_costs = [-50, 100, 75, 200]
+  positive_cost = [for cost in local.monthly_costs :
+  abs(cost)]
+  max_cost = max(local.positive_cost...)
+  ```
 
 - **31:56 - 37:33 | Timestamp Management and Formatting Using `timestamp` and `formatdate` Functions**  
   The video explains obtaining system timestamps with `timestamp()` and formatting it into human-readable strings with `formatdate()`. These formatted timestamps can be included as tags or resource identifiers for auditability and versioning in resource management, underscoring practical application of time-based Terraform functions.
 
+  ```tf
+  #assignment 11
+  current_time = timestamp()
+  resource_name = formatdate("YYYYMMDD",local.current_time)
+  tag_date = formatdate("DD-MM-YYYY",local.current_time)
+  
+  ```
+
 - **37:33 - 41:49 | Secure File Content Handling and JSON Validation**  
   Covers reading JSON configuration files securely by marking loaded content as sensitive to avoid output leakage. The use of `jsondecode` allows parsing string content into Terraform objects, facilitating validation of JSON structures. This underscores the importance of secure and structured configuration management.
+  ```tf
+  `  #assignment 12
+  config_content = sensitive(file(config.json))
+  ```
 
 ### Key terms and definitions 📚
 
