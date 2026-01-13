@@ -46,6 +46,66 @@ This video introduces the concept of **data sources** in Terraform, explaining t
 - **Terraform Apply**: Executes the planned changes in the actual cloud or infrastructure environment.  
 - **Reference Attribute**: A property provided by a data source or resource (like `id`, `name`, or `location`) that is used to link between different infrastructure components.
 
+```tf
+# Fetch an existing resource group
+data "azurerm_resource_group" "shared_rg" {
+  name = "your-shared-resource-group"
+}
+
+# Fetch an existing virtual network within that resource group
+data "azurerm_virtual_network" "shared_vnet" {
+  name                = "your-shared-vnet"
+  resource_group_name = data.azurerm_resource_group.shared_rg.name
+}
+
+# Fetch an existing subnet within that virtual network
+data "azurerm_subnet" "shared_subnet" {
+  name                 = "your-shared-subnet"
+  resource_group_name  = data.azurerm_resource_group.shared_rg.name
+  virtual_network_name = data.azurerm_virtual_network.shared_vnet.name
+}
+
+# Create a new network interface in the shared subnet
+resource "azurerm_network_interface" "vm_nic" {
+  name                = "demo-vm-nic"
+  location            = data.azurerm_resource_group.shared_rg.location
+  resource_group_name = data.azurerm_resource_group.shared_rg.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = data.azurerm_subnet.shared_subnet.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+# Create a new VM using the network interface and resource group info from data
+resource "azurerm_linux_virtual_machine" "demo_vm" {
+  name                  = "demo-vm"
+  location              = data.azurerm_resource_group.shared_rg.location
+  resource_group_name   = data.azurerm_resource_group.shared_rg.name
+  size                  = "Standard_B1s"
+  admin_username        = "adminuser"
+  network_interface_ids = [azurerm_network_interface.vm_nic.id]
+
+  admin_ssh_key {
+    username   = "adminuser"
+    public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD..." # Replace with your actual public key
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "18.04-LTS"
+    version   = "latest"
+  }
+}
+
+```
+
 ### Reasoning structure 🧠
 
 1. **Premise:** Existing network infrastructure is managed separately by a network team; other teams cannot create or alter it.  
