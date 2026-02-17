@@ -315,13 +315,12 @@ Avoid unnecessary depends_on
 
 1️⃣1️⃣ Common Interview Traps
 
-Scenario Correct Thinking
-
-Rename resource Use terraform state mv
-State locked Check active deployment first
-Manual change Decide: revert or update code
-Secret in tfvars Move to Key Vault
-Backend deleted Restore from versioning/backup
-Apply failed midway Fix error & reapply
-
+| Scenario | Correct Action / Thinking |
+| :--- | :--- |
+| **Rename resource** | Use `terraform state mv` |
+| **State locked** | Check active deployment first |
+| **Manual change** | Decide: revert or update code |
+| **Secret in tfvars** | Move to Key Vault |
+| **Backend deleted** | Restore from versioning/backup |
+| **Apply failed midway** | Fix error & reapply |
 
