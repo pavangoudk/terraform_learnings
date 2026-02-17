@@ -26,12 +26,12 @@ Uses providers (AzureRM, AWS, etc.)
 
 Core Commands
 
-terraform init
-terraform plan
-terraform apply
-terraform destroy
-terraform validate
-terraform fmt
+- terraform init
+- terraform plan
+- terraform apply
+- terraform destroy
+- terraform validate
+- terraform fmt
 
 Important Concepts
 
@@ -75,11 +75,11 @@ Dependencies
 
 State Commands
 
-terraform state list
-terraform state show
-terraform state mv
-terraform state rm
-terraform import
+- terraform state list
+- terraform state show
+- terraform state mv
+- terraform state rm
+- terraform import
 
 Important Notes
 
@@ -98,7 +98,7 @@ State locking prevents corruption
 3️⃣ Backend Configuration (Azure)
 
 Remote Backend Example
-
+```
 terraform {
   backend "azurerm" {
     resource_group_name = "rg-tf"
@@ -107,7 +107,7 @@ terraform {
     key = "prod.tfstate"
   }
 }
-
+```
 Important:
 
 Azure Blob uses lease mechanism for locking
@@ -166,12 +166,13 @@ CI/CD-only deployment
 ---
 
 5️⃣ Lifecycle Meta-Arguments
-
+```
 lifecycle {
   prevent_destroy = true
   create_before_destroy = true
   ignore_changes = [tags]
 }
+```
 
 Use Cases:
 
@@ -262,7 +263,7 @@ Misconfiguration
 9️⃣ Multi-Environment Design
 
 Recommended Structure
-
+```
 modules/
    network/
    compute/
@@ -272,7 +273,7 @@ environments/
    dev/
    qa/
    prod/
-
+```
 Best Practice:
 
 Separate state per environment
