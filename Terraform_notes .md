@@ -6,7 +6,7 @@ I’ll organize this in layers so you can revise quickly before interviews.
 
 ---
 
-📘 Terraform Notes – Azure DevOps Engineer (4+ Years)
+📘 Terraform Notes – Azure DevOps Engineer
 
 
 ---
